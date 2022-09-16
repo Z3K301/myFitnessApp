@@ -5,7 +5,7 @@ import { Muscle } from './entities/muscle.entity';
 
 @Injectable()
 export class MuscleService extends TypeOrmCrudService<Muscle> {
-  constructor(@InjectRepository(MuscleService) repository) {
+  constructor(@InjectRepository(Muscle) repository) {
     super(repository);
   }
 }
