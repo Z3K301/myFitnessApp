@@ -1,34 +1,83 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Put,
+} from '@nestjs/common';
+import { Crud } from '@nestjsx/crud';
+import { UserCrud } from './user.crud';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-
+@Crud(UserCrud)
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(public userService: UserService) {}
+
+  @Get('/:id')
+  async getUserData(@Param('id') id: number) {
+    return await this.userService.getField(
+      { id },
+      'id, login, fullName, phone, email, status, roleId',
+    );
+  }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  async insert(@Body() body) {
+    const { login, fullName, phone, email, password, status, roleId } = body;
+    return await this.userService.insert(
+      login,
+      fullName,
+      phone,
+      email,
+      password,
+      status,
+      roleId,
+    );
   }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
+  @Put('/:id')
+  async update(@Body() body, @Param('id') id: number) {
+    const { login, fullName, phone, email, password, status, roleId } = body;
+    return await this.userService.update(
+      id,
+      login,
+      fullName,
+      phone,
+      email,
+      password,
+      status,
+      roleId,
+    );
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  @Get('/tipo/:tipo')
+  async getTipo(@Param('tipo') tipo: number) {
+    return this.userService.getUsersByRoleType(tipo);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @Post('/checkEmail')
+  async checkEmail(@Body() body: any) {
+    return await this.userService.checkEmail(body.email);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  @Post('/field')
+  async getField(@Body() body) {
+    const { where, field } = body;
+    return await this.userService.getField(where, field);
+  }
+
+  @Post('/checkToken')
+  async checkToken(@Body() body) {
+    const { email, token } = body;
+    return await this.userService.checkToken(email, token);
+  }
+
+  @Post('/resetPassword')
+  async resetPassword(@Body() body) {
+    const { email, password } = body;
+    return await this.userService.resetPassword(email, password);
   }
 }

@@ -1,13 +1,35 @@
 import { GenericEntity } from 'src/common/entities/GenericEntity.entity';
 import { Column, Entity } from 'typeorm';
-import { varcharNotNull, varcharNull } from 'src/common/columnParameters';
-import { IsNotEmpty, IsString } from 'class-validator';
+import {
+  enumType,
+  varcharNotNull,
+  varcharNull,
+} from 'src/common/columnParameters';
+import {
+  IsDefined,
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+} from 'class-validator';
+import { units } from 'src/common/enumerations/units';
 @Entity()
 export class User extends GenericEntity {
   @Column(varcharNotNull)
   @IsNotEmpty()
   @IsString()
   login: string;
+
+  @Column(varcharNotNull)
+  @IsNotEmpty()
+  @IsString()
+  password: string;
+
+  @Column(varcharNotNull)
+  @IsNotEmpty()
+  @IsString()
+  @IsEmail()
+  email: string;
 
   @Column(varcharNotNull)
   @IsNotEmpty()
@@ -19,5 +41,8 @@ export class User extends GenericEntity {
   @IsString()
   avatar: string;
 
-  //TODO enum unit
+  @Column(enumType(units))
+  @IsDefined()
+  @IsEnum(units)
+  unit: string;
 }
